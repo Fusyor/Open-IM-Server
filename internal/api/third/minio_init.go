@@ -5,12 +5,13 @@ import (
 	"Open_IM/pkg/common/log"
 	"Open_IM/pkg/utils"
 	"context"
+	url2 "net/url"
+
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	url2 "net/url"
 )
 
-func init() {
+func InitMinio() {
 	minioUrl, err := url2.Parse(config.Config.Credential.Minio.Endpoint)
 	if err != nil {
 		log.NewError("", utils.GetSelfFuncName(), "parse failed, please check config/config.yaml", err.Error())
@@ -34,7 +35,10 @@ func init() {
 		if err == nil && exists {
 			log.NewInfo("", utils.GetSelfFuncName(), "We already own %s\n", config.Config.Credential.Minio.Bucket)
 		} else {
-			log.NewError("", utils.GetSelfFuncName(), "create bucket failed and bucket not exists", err.Error())
+			if err != nil {
+				log.NewError("", utils.GetSelfFuncName(), err.Error())
+			}
+			log.NewError("", utils.GetSelfFuncName(), "create bucket failed and bucket not exists")
 			return
 		}
 	}
